@@ -666,6 +666,25 @@ def serve(config: ConfigArg, host: str = "127.0.0.1", port: int = 8080, index: s
     uvicorn.run(create_app(service), host=host, port=port, log_level="info", access_log=False)
 
 
+@app.command("serve-fixture")
+def serve_fixture(host: str = "0.0.0.0", port: int = 8080) -> None:  # noqa: S104 - container entrypoint
+    """Build (or reuse) the bundled fixture index in ./.searchforge and serve it (Docker default)."""
+    import uvicorn
+
+    from searchforge.api.app import create_app
+    from searchforge.config.loader import load_config
+    from searchforge.datasets import fixture_config_path
+    from searchforge.indexes.builder import IndexBuilder
+    from searchforge.indexes.handle import open_index
+    from searchforge.service.search_service import SearchService
+
+    loaded = load_config(fixture_config_path(), overrides={"storage": {"reserve_free_gb": 0.5}})
+    built = IndexBuilder(loaded).build()
+    console.print(f"serving {built.manifest.index_id} on {host}:{port}")
+    handle = open_index(loaded.workspace, loaded.config.index.name, loaded.config)
+    uvicorn.run(create_app(SearchService(handle, loaded.config)), host=host, port=port, access_log=False)
+
+
 # ----------------------------------------------------------------------------- storage
 @storage_app.command("status")
 def storage_status(

@@ -1,0 +1,22 @@
+{
+  "title": "SearchForge",
+  "uid": "searchforge",
+  "schemaVersion": 39,
+  "time": {"from": "now-1h", "to": "now"},
+  "panels": [
+    {"type": "timeseries", "title": "Queries / second", "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+     "targets": [{"expr": "sum by (profile) (rate(searchforge_search_requests_total[1m]))"}]},
+    {"type": "timeseries", "title": "Latency p50 / p95 / p99 (s)", "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+     "targets": [
+       {"expr": "histogram_quantile(0.5, sum by (le) (rate(searchforge_search_latency_seconds_bucket[5m])))", "legendFormat": "p50"},
+       {"expr": "histogram_quantile(0.95, sum by (le) (rate(searchforge_search_latency_seconds_bucket[5m])))", "legendFormat": "p95"},
+       {"expr": "histogram_quantile(0.99, sum by (le) (rate(searchforge_search_latency_seconds_bucket[5m])))", "legendFormat": "p99"}]},
+    {"type": "timeseries", "title": "Stage latency p95 (s)", "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
+     "targets": [{"expr": "histogram_quantile(0.95, sum by (le, stage) (rate(searchforge_stage_latency_seconds_bucket[5m])))", "legendFormat": "{{stage}}"}]},
+    {"type": "timeseries", "title": "Cache hit rate", "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8},
+     "targets": [{"expr": "sum(rate(searchforge_cache_events_total{event=\"hit\"}[5m])) / sum(rate(searchforge_cache_events_total[5m]))"}]},
+    {"type": "timeseries", "title": "Errors and degraded responses", "gridPos": {"x": 0, "y": 16, "w": 24, "h": 8},
+     "targets": [{"expr": "sum by (stage, kind) (rate(searchforge_errors_total[5m]))"},
+                 {"expr": "sum by (reason) (rate(searchforge_degraded_total[5m]))"}]}
+  ]
+}

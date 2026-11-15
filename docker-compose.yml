@@ -1,0 +1,76 @@
+# SearchForge local stack. Only `searchforge` starts by default (lightweight, CPU only).
+# Heavier services are opt-in profiles with explicit resource limits for a 16 GB RAM machine:
+#   docker compose up -d                                  # SearchForge API only (~0.3–1 GB)
+#   docker compose --profile qdrant up -d                 # + Qdrant (1 GB limit)
+#   docker compose --profile observability up -d          # + Prometheus + Grafana
+#   docker compose --profile opensearch up -d             # + OpenSearch single node (2.5 GB limit)
+# None of these services are used by the standard test suite or Jenkins CI.
+# Ports bind to 127.0.0.1 only.
+
+name: searchforge
+
+services:
+  searchforge:
+    build: .
+    image: searchforge:local
+    command: ["serve-fixture", "--host", "0.0.0.0", "--port", "8080"]
+    ports: ["127.0.0.1:8080:8080"]
+    volumes: ["searchforge-workspace:/work"]
+    environment:
+      HF_HUB_OFFLINE: "1"
+    mem_limit: 1g
+    cpus: 2.0
+    read_only: false
+    security_opt: ["no-new-privileges:true"]
+    restart: unless-stopped
+
+  qdrant:
+    profiles: ["qdrant"]
+    image: qdrant/qdrant:v1.13.6
+    ports: ["127.0.0.1:6333:6333"]
+    volumes: ["qdrant-storage:/qdrant/storage"]
+    mem_limit: 1g
+    cpus: 1.0
+
+  prometheus:
+    profiles: ["observability"]
+    image: prom/prometheus:v2.55.1
+    volumes: ["./deployment/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro"]
+    ports: ["127.0.0.1:9090:9090"]
+    mem_limit: 512m
+    cpus: 0.5
+
+  grafana:
+    profiles: ["observability"]
+    image: grafana/grafana:11.3.1
+    ports: ["127.0.0.1:3000:3000"]
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: "Viewer"
+    volumes:
+      - ./deployment/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./deployment/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    mem_limit: 512m
+    cpus: 0.5
+
+  opensearch:
+    profiles: ["opensearch"]
+    image: opensearchproject/opensearch:2.18.0
+    environment:
+      discovery.type: single-node
+      bootstrap.memory_lock: "true"
+      OPENSEARCH_JAVA_OPTS: "-Xms1g -Xmx1g"
+      # Local development only: security plugin disabled, bound to localhost.
+      DISABLE_SECURITY_PLUGIN: "true"
+      DISABLE_INSTALL_DEMO_CONFIG: "true"
+    ulimits:
+      memlock: {soft: -1, hard: -1}
+    ports: ["127.0.0.1:9200:9200"]
+    volumes: ["opensearch-data:/usr/share/opensearch/data"]
+    mem_limit: 2500m
+    cpus: 2.0
+
+volumes:
+  searchforge-workspace:
+  qdrant-storage:
+  opensearch-data:
