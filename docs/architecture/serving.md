@@ -60,8 +60,9 @@ A degraded response has `degraded: true` and explicit `degradation_reasons`:
 If every list fails the request fails: `SearchTimeout` when any failure was a timeout, else
 `RetrievalFailure`. With `allow_degraded: false`, any retriever failure fails the request. With
 `reranker_fallback: false`, a rerank timeout or error fails it. A reranker that changes the candidate
-set raises `RerankerFailure` regardless of `reranker_fallback`, and a reranker that cannot be
-constructed (for example a missing cross-encoder model) raises before the rerank stage.
+set raises `RerankerFailure` regardless of `reranker_fallback`. A reranker that cannot be constructed
+(for example a missing cross-encoder model) degrades the response with reason `reranker_unavailable`
+when `reranker_fallback` is on, and fails the request otherwise.
 
 ## Circuit breaker
 
@@ -86,7 +87,7 @@ access logging disabled. `serve-fixture` builds or reuses the bundled fixture in
 | `POST /search` | search; body `{"query", "top_k", "filters", "profile"}` |
 | `POST /search/explain` | same, plus per-result `explanation` and the full `trace` |
 | `GET /indexes` | versions of the served index name, which one is `CURRENT`, which one is served |
-| `GET /indexes/{index_id}` | manifest view for `version` or `name@version` of the served index name |
+| `GET /indexes/{index_id}` | manifest view for `version` or `name@version` of the served index name; the version must match `v<timestamp>-<8 hex>` before any filesystem access, otherwise 404 |
 | `GET /metrics` | Prometheus text exposition |
 
 Request limits: `query` 1 to 2000 chars, `top_k` 1 to 100 (default 10; the domain allows up to 200),
@@ -123,10 +124,9 @@ Error bodies are `{"detail": {"error": <class name>, "message": <first 500 chars
 
 Label policy: values come from small closed sets. `profile` is the requested profile name, or
 `invalid` if unknown; `stage` outside the known set becomes `other`; `kind` is an exception class name
-truncated to 40 chars; `reason` is the degradation reason up to the first `:` (so it may carry a
-`#vN` variant suffix, bounded by `max_variants`). Query text, document ids, chunk ids and user ids are
-never labels. Stage latencies are observed for `analysis`, `lexical`, `dense`, `fusion`, `rerank` and
-`diversity`. Latency buckets range from 1 ms to 5 s.
+truncated to 40 chars; `reason` is the degradation reason up to the first `:` with any `#vN` variant
+suffix removed. Query text, document ids, chunk ids and user ids are never labels. Stage latencies
+are observed for `analysis`, `lexical`, `dense`, `fusion`, `hydrate`, `rerank` and `diversity`. Latency buckets range from 1 ms to 5 s.
 
 ```
 rate(searchforge_search_requests_total[1m])

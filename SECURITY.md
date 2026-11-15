@@ -222,8 +222,6 @@ These are not mitigated in the current version. Account for them in deployments.
     are unauthenticated. Put it behind a reverse proxy that provides these before exposing it
     beyond localhost.
   - `searchforge serve-fixture`, the container entrypoint, binds to `0.0.0.0` by default.
-  - Index version references in `GET /indexes/{index_id}` are not validated against a strict
-    pattern before they are joined into a filesystem path.
 - **Index integrity.**
   - Manifests are not signed, so checksums detect corruption, not tampering by someone who can
     also rewrite `manifest.json`.

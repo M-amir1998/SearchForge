@@ -105,12 +105,11 @@ Exit codes:
 |---|---|
 | 0 | comparison ran and all gates passed, or `--no-gates` was given |
 | 1 | a gate failed (`QualityGateFailure`) |
-| 2 | a SearchForge error during evaluation, e.g. an unknown profile or no judged queries |
+| 2 | any other error: invalid `--split` (usage error), config or index cannot be loaded, unknown profile, no judged queries |
 
-Errors raised before evaluation starts (loading the config, opening the index) and an invalid
-`--split` value are not mapped by the command and surface as an unhandled exception, which also
-exits non-zero (typically 1). In CI, treat the presence of the `--out` JSON with
-`gates.passed: false` as the definitive gate failure.
+Exit code 1 is reserved for gate failures, so CI can distinguish "the candidate regressed" from "the
+comparison could not run". The relevant-document lists and failure analysis use
+`evaluation.relevance_threshold`.
 
 ## CI usage
 

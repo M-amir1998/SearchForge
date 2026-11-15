@@ -25,7 +25,7 @@ space. Code: [storage/budget.py](../../src/searchforge/storage/budget.py),
 
 ## Disk estimation
 
-`check_disk_budget` runs at the start of every full build (not for incremental updates). It estimates
+`check_disk_budget` runs at the start of every full build and every incremental update. It estimates
 the new version from the source size and configuration:
 
 | Component | Heuristic |
@@ -79,17 +79,17 @@ Dry run is the default. Targets, all inside the workspace:
 |---|---|
 | `<workspace>/cache/` | exists (embedding cache; recomputable) |
 | `<workspace>/prepared/` | exists (prepared exports; recomputable) |
-| `<workspace>/indexes/*/*.partial/` | any partial build directory |
-| `<workspace>/indexes/<name>/<version>/` | only with `--include-old-versions`, every complete version that is not `CURRENT` |
+| `<workspace>/indexes/*/*.partial/` | partial build directories last modified more than 1 hour ago (`PARTIAL_MIN_AGE_S`) |
+| `<workspace>/indexes/<name>/<version>/` | only with `--include-old-versions`, every complete version that is not `CURRENT`, and only for indexes that have a `CURRENT` pointer |
 
 Every target is checked to resolve inside the workspace when the plan is made and again immediately
 before deletion; read-only files of published versions are made writable for removal.
 
 Cautions:
 
-- A `.partial` directory of a build that is running right now is also a target. Do not clean while a
-  build or update is in progress.
-- If an index has no `CURRENT` pointer, `--include-old-versions` targets all of its versions.
+- Recent `.partial` directories (younger than one hour) are skipped because they may belong to a
+  running build; still avoid cleaning during very long builds.
+- An index without a `CURRENT` pointer is never pruned by `--include-old-versions`.
 - Old versions are rollback targets ([index lifecycle](index-lifecycle.md#rollback)).
 
 **Never deleted:** source corpora, the results directory, configuration files, anything outside the

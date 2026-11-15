@@ -285,6 +285,8 @@ Full report: [results/beir-scifact/report.md](results/beir-scifact/report.md)
 - The OpenSearch adapter is implemented and unit-tested against its query DSL; live tests run only against an
   operator-provided cluster (`OPENSEARCH_URL`). pgvector is documented, not implemented.
 - Latency numbers are in-process, single machine, and noisy at sub-10 ms scales.
+- Evaluated rankings contain at most each profile's `candidate_k` chunks (50 by default, 20 for the D20
+  depth system), so Recall@20 for shallow configurations reflects what they actually return.
 
 ## Roadmap
 

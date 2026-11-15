@@ -68,7 +68,7 @@ parameters.
 
 | Id | Depends on | Consequence |
 |---|---|---|
-| `document_id` | explicit id that is a safe identifier: used verbatim; explicit id that is not: `doc-` + hash of that id; no explicit id: `doc-` + hash of `source_key` and record key | stable across chunking/index changes; an edited document keeps its id |
+| `document_id` | explicit id that is a safe identifier: used verbatim; explicit id that is not: `doc-` + hash of that id; no explicit id: `doc-` + hash of `<source id>/<source_key>` and record key (so two sources cannot collide) | stable across chunking/index changes; an edited document keeps its id |
 | `content_hash` | normalized text + title, uri, attributes, created/updated timestamps | detects updates (see [index updates](../operations/index-updates.md)) |
 | `chunk_id` | `document_id`, chunker fingerprint, span and text | `<document_id>#<hash>`; changes when chunking changes |
 | citation id | `chunk_id` | `S` + upper-case hash, used by the context builder |
@@ -154,7 +154,7 @@ Populating the OpenSearch index (`create=True`, `add`) is the caller's responsib
 
 1. `check_profile_allows_local` and `check_disk_budget` ([storage](../operations/storage.md)).
 2. Pass 1 streams the corpus to compute `corpus_version` (hash of sorted document ids and content
-   hashes). The build fingerprint hashes `corpus_version`, the mode, the chunker fingerprint, the
+   hashes). The build fingerprint hashes `INDEX_FORMAT_VERSION`, `corpus_version`, the mode, the chunker fingerprint, the
    lexical config, the dense config (excluding `cache_enabled` and `batch_size`) and the filter
    schema. If a version with the same fingerprint exists it is reused (unless `--force`).
 3. Pass 2 streams documents through the chunker into the chunk store and FTS5, committing every

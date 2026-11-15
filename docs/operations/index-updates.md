@@ -50,8 +50,8 @@ The parent version directory is never modified. The update:
    ([index lifecycle](index-lifecycle.md)).
 
 The whole parent is copied, so an update temporarily needs roughly the parent's size plus the new
-data on disk. Unlike a full build, `update` does not run the disk-budget check; check free space with
-`searchforge storage status` first. Any failure removes the partial directory.
+data on disk. Like a full build, `update` runs the profile and disk-budget checks first
+(`StorageBudgetExceeded` if the reserve would be violated). Any failure removes the partial directory.
 
 The new version's fingerprint hashes the new `corpus_version`, the parent's build fingerprint, the
 embedding revision and the configuration parts. It never matches a full-build fingerprint, so a later
@@ -80,13 +80,13 @@ when any of these differ between the parent manifest and the current configurati
 | chunking configuration changed | chunker fingerprint (strategy and its parameters) |
 | lexical configuration changed | lexical enabled flag and the full lexical config |
 | dense enablement changed | dense enabled flag |
-| embedding provider changed | provider name only |
+| embedding provider changed | provider name |
+| dense configuration changed | the manifest's recorded `dense_config` (model, revision, dimension, TF-IDF parameters, vector backend; cache and batch settings excluded) |
 | filter schema changed | `corpus.filterable_fields` plus system fields |
 
-Not compared: the dense model, revision, dimension, TF-IDF parameters and vector backend. For `tfidf`,
-`hash` and `sentence_transformer`, when those change in the configuration but the provider name does
-not, the update still succeeds and keeps using the parent's embedder as recorded in its manifest; the
-new dense settings take effect only after a full build. For `remote`, `restore_embedder` requires a
+Any change to settings that affect vectors therefore requires a full build; an update always keeps
+the parent's embedder (for TF-IDF: the frozen vocabulary). Manifests written before `dense_config`
+was recorded skip this comparison. For `remote`, `restore_embedder` requires a
 configured `dense.remote` whose model equals the manifest's model and a matching dimension; otherwise
 the update fails with `IndexVersionMismatch`.
 

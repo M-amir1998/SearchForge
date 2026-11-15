@@ -65,3 +65,6 @@ Thumbs.db
 .idea/
 .vscode/
 results/beir-scifact/hard_negatives.jsonl
+
+# CI / local verification outputs (JUnit, coverage, gate summaries)
+reports/

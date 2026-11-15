@@ -53,7 +53,7 @@ _Last updated: 2026-11-15_
 | Git authors | sole author verified over the whole history; no co-author / generated-by trailers |
 | Large files | none over 1 MB in history (largest: `uv.lock`) |
 | GitHub Actions | none (`.github/workflows/` absent) |
-| Jenkins | `Jenkinsfile` written and its stage commands exercised locally; **not executed on a Jenkins server** (no Jenkins/Java on this machine) |
+| Jenkins | Every `sh` step of the `Jenkinsfile` was executed in Git Bash on this Windows machine (lockfile check with `UV_FROZEN` unset, sync, doctor, format, Ruff, mypy, all test stages, local index E2E smoke with its assertion, compare gate, demo, security scan, package build); the Docker stage takes its documented skip path because no daemon was running. **The pipeline itself has not run on a Jenkins server** (no Jenkins/Java here). |
 | Docker | `Dockerfile` and `docker-compose.yml` written; `docker compose config` validates; **image build not verified** (Docker daemon not running here, ~1.6 GB RAM free during the session) |
 | Local CPU demo | `searchforge demo` and `searchforge demo adaptive` complete offline; quality gates for B4 vs B0 pass |
 | First public study | BEIR SciFact test (300 queries), CPU nDCG@10: BM25 0.687, TF-IDF+LSA dense 0.467, hybrid RRF 0.594, hybrid+rerank 0.622, adaptive 0.607 |

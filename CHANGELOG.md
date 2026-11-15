@@ -9,6 +9,23 @@ aims to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) once i
 
 First development version. Everything below is new.
 
+### Fixed
+
+- Fused scores use `math.fsum`, so RRF/normalized fusion results no longer depend on the order of
+  retriever lists (found by a Hypothesis property test).
+- Integer filter values are bounded to the signed 64-bit range (previously an out-of-range value
+  overflowed SQLite; found by a Hypothesis property test).
+- Build fingerprints include `INDEX_FORMAT_VERSION`, so indexes written by an older format are not reused.
+- Query cache keys preserve letter case and the cache is cleared when a profile is replaced at runtime.
+- Errored candidate queries count as regressions; latency deltas use the common query set.
+- `compare` exits 2 on errors and 1 only on gate failures; `relevance_threshold` is honoured by the CLI.
+- Incremental updates compare the recorded dense configuration and run the disk-budget check.
+- Document ids include the source id; `storage clean` skips recent `.partial` builds and indexes
+  without `CURRENT`.
+- Qdrant `:memory:` clients are shared per process; missing backend credential variables fail fast.
+- `GET /indexes/{index_id}` validates version ids; reranker construction failures degrade the response.
+- Qrels keep judgment sources; hard negatives report document ranks; `weighted_rrf` requires weights.
+
 ### Added
 
 #### Architecture

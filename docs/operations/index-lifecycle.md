@@ -46,10 +46,15 @@ A full build first streams the corpus to compute `corpus_version` (hash of sorte
 content hashes) and then the build fingerprint:
 
 ```
-build_fingerprint = sha256(corpus_version, mode, chunker fingerprint,
+build_fingerprint = sha256(INDEX_FORMAT_VERSION, corpus_version, mode, chunker fingerprint,
                            lexical config, dense config without cache_enabled/batch_size,
                            filter schema)
 ```
+
+`INDEX_FORMAT_VERSION` ([builder.py](../../src/searchforge/indexes/builder.py)) is bumped whenever the
+on-disk format or the identity of fitted state changes, so versions written by older code are never
+reused through a fingerprint match (opening one raises `IndexVersionMismatch`; rebuild with
+`searchforge index build --force`).
 
 If any existing version of the index has the same fingerprint, the build is skipped, that version is
 made `CURRENT` (even if it is older) and the CLI prints `reused existing`. `searchforge index build
