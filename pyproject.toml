@@ -156,7 +156,11 @@ markers = [
   "opensearch: requires a live OpenSearch at OPENSEARCH_URL",
   "neural: requires sentence-transformers and locally cached models",
 ]
-filterwarnings = ["error::pytest.PytestUnraisableExceptionWarning"]
+filterwarnings = [
+  "error::pytest.PytestUnraisableExceptionWarning",
+  "ignore:Payload indexes have no effect in the local Qdrant:UserWarning",
+  "ignore:Using .httpx. with .starlette.testclient. is deprecated",
+]
 
 [tool.coverage.run]
 source = ["searchforge"]

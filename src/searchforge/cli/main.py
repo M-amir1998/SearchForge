@@ -525,9 +525,10 @@ def compare(
     except SearchForgeError as exc:
         _fail(exc)
     finally:
-        for s, h in {(service, handle), (cand_service, cand_handle)}:
-            s.close()
-            h.close()
+        pairs = [(service, handle)] + ([(cand_service, cand_handle)] if cand_service is not service else [])
+        for svc, hdl in pairs:
+            svc.close()
+            hdl.close()
 
 
 @app.command()
