@@ -154,8 +154,8 @@ and keeps cardinality bounded (`observability/metrics.py`).
   - OpenSearch: `username_env` and `password_env`;
   - remote embeddings: `api_key_env`.
 
-  URL and host fields are free-form strings. Never embed credentials in them, for example
-  `https://user:pass@host`. The lexical configuration, including OpenSearch `hosts`, is copied
+  URL and host fields are free-form strings. Never embed credentials in them (for example a
+  `user:password@` userinfo prefix in a host URL). The lexical configuration, including OpenSearch `hosts`, is copied
   into index manifests, which `searchforge index inspect` prints.
 - OpenSearch TLS certificate verification is on by default (`verify_certs: true`).
 - `.env` files, keys and credential files are git-ignored. `detect-secrets` and
