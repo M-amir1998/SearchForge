@@ -71,6 +71,9 @@ class BenchmarkSpec(BaseModel):
     primary_metric: str = "ndcg@10"
     throughput: ThroughputSpec = ThroughputSpec()
     measure_cache: bool = True
+    #: Report framing: a banner (Markdown) and limitation bullets; defaults describe the fixture collection.
+    banner: str | None = None
+    limitations: list[str] | None = None
 
 
 @dataclass(slots=True)

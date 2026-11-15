@@ -18,6 +18,21 @@ from searchforge.reporting.svg import Point, scatter_svg
 
 QUERY_TYPES = ("keyword", "semantic", "identifier", "ambiguous", "filter")
 
+DEFAULT_BANNER = """**LOCAL DEMONSTRATION RESULTS.** Measured on the small synthetic fixture collection shipped with
+SearchForge on a CPU-only machine. These numbers demonstrate the methodology; they are **not**
+industry benchmarks and do not predict behaviour on other corpora."""
+
+DEFAULT_LIMITATIONS = (
+    "The fixture collection is tiny (tens of documents, ~50 queries) and synthetic; differences of a few "
+    "hundredths in nDCG are within noise. No significance testing is performed at this size.",
+    "The dense baseline is TF-IDF + LSA fitted on the corpus itself — a classical, CPU-only baseline, not a "
+    "neural embedding model. Neural embeddings/cross-encoders are optional extras and not measured here.",
+    "Latency is measured in-process (no network) on a single shared developer machine after warm-up; "
+    "sub-10 ms differences are within run-to-run noise.",
+    "The rules-based planner and lexical-feature reranker were designed alongside this collection; validate "
+    "them on an independent collection (e.g. a BEIR subset) before drawing conclusions.",
+)
+
 
 def _f(v: Any, digits: int = 3) -> str:
     if v is None:
@@ -63,9 +78,7 @@ def render_report(result: BenchmarkResult, plot_rel: str = "plots/quality_latenc
     lines: list[str] = [
         f"# SearchForge Search-Quality Report — `{spec.name}`",
         "",
-        "> **LOCAL DEMONSTRATION RESULTS.** Measured on the small synthetic fixture collection shipped with",
-        "> SearchForge on a CPU-only machine. These numbers demonstrate the methodology; they are **not**",
-        "> industry benchmarks and do not predict behaviour on other corpora.",
+        *[f"> {line}" for line in (spec.banner or DEFAULT_BANNER).strip().splitlines()],
         "",
         "## Setup",
         "",
@@ -119,7 +132,8 @@ def render_report(result: BenchmarkResult, plot_rel: str = "plots/quality_latenc
         "## Quality by query type (nDCG@10)",
         "",
     ]
-    types = [t for t in QUERY_TYPES if any(q.query_type == t for q in result.queries)]
+    present = {q.query_type for q in result.queries}
+    types = [t for t in QUERY_TYPES if t in present] + sorted(present - set(QUERY_TYPES))
     rows = []
     for s in core:
         bt = s.run.by_query_type()
@@ -269,18 +283,7 @@ def render_report(result: BenchmarkResult, plot_rel: str = "plots/quality_latenc
         rows.append([s.spec.name, str(sum(counts.values())), ", ".join(f"{k}: {v}" for k, v in counts.items()) or "–"])
     lines += [_table(["System", "Missed relevant docs (top-10)", "By category"], rows), ""]
 
-    lines += [
-        "## Limitations",
-        "",
-        "- The fixture collection is tiny (tens of documents, ~50 queries) and synthetic; differences of a few",
-        "  hundredths in nDCG are within noise. No significance testing is performed at this size.",
-        "- The dense baseline is TF-IDF + LSA fitted on the corpus itself — a classical, CPU-only baseline,",
-        "  not a neural embedding model. Neural embeddings/cross-encoders are optional extras and not measured here.",
-        "- Latency is measured in-process (no network), single machine, after warm-up.",
-        "- The rules-based planner and lexical-feature reranker were designed alongside this collection;",
-        "  validate them on an independent collection (e.g. a BEIR subset) before drawing conclusions.",
-        "",
-    ]
+    lines += ["## Limitations", "", *[f"- {item}" for item in (spec.limitations or DEFAULT_LIMITATIONS)], ""]
     return "\n".join(lines)
 
 

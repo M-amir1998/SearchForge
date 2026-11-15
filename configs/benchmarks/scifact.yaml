@@ -14,3 +14,13 @@ systems:
   - {name: B2-hybrid-rrf, profile: hybrid}
   - {name: B4-hybrid-rerank, profile: hybrid_rerank}
   - {name: B5-adaptive, profile: adaptive}
+banner: |
+  **PUBLIC-DATASET STUDY (CPU).** BEIR SciFact test split (5,183 abstracts, 300 claims), measured on a
+  single CPU-only developer machine. Dense retrieval here is the classical TF-IDF + LSA baseline,
+  not a neural embedding model.
+limitations:
+  - "Single dataset (scientific claim verification); results do not transfer to other domains without measurement."
+  - "Dense retrieval is TF-IDF + LSA (256 dims) fitted on the corpus. Neural embeddings (e.g. MiniLM, BGE-small) are the planned next study and are expected to change the hybrid picture."
+  - "The lexical-feature reranker and adaptive rules were not tuned for SciFact (claims are long natural-language queries)."
+  - "Latency is in-process on a shared developer machine with other workloads running; treat latency deltas as indicative."
+  - "No significance testing; per-query improved/regressed counts are reported instead."
