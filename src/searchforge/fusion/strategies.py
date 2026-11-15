@@ -48,7 +48,7 @@ class ReciprocalRankFusion:
             raise ValueError("RRF k must be >= 1")
 
     def fuse(self, ranked_lists: Mapping[str, Sequence[Candidate]], limit: int) -> list[Candidate]:
-        scores: dict[str, float] = {}
+        parts: dict[str, list[float]] = {}
         best: dict[str, int] = {}
         docs: dict[str, str] = {}
         for list_name, candidates in ranked_lists.items():
@@ -58,9 +58,11 @@ class ReciprocalRankFusion:
                 if c.chunk_id in seen:
                     continue  # a list contributes at most once per item
                 seen.add(c.chunk_id)
-                scores[c.chunk_id] = scores.get(c.chunk_id, 0.0) + w / (self.k + c.rank)
+                parts.setdefault(c.chunk_id, []).append(w / (self.k + c.rank))
                 best[c.chunk_id] = min(best.get(c.chunk_id, c.rank), c.rank)
                 docs[c.chunk_id] = c.document_id
+        # math.fsum is exactly rounded, so the score (and tie order) does not depend on list order.
+        scores = {cid: math.fsum(vals) for cid, vals in parts.items()}
         return _finalize(scores, best, docs, limit)
 
 
@@ -112,10 +114,10 @@ class NormalizedScoreFusion:
                 best[c.chunk_id] = min(best.get(c.chunk_id, c.rank), c.rank)
         scores: dict[str, float] = {}
         for chunk_id in docs:
-            total = 0.0
-            for list_name, (normed_map, missing) in per_list.items():
-                total += _weight(self.weights, list_name) * normed_map.get(chunk_id, missing)
-            scores[chunk_id] = total
+            scores[chunk_id] = math.fsum(
+                _weight(self.weights, list_name) * normed_map.get(chunk_id, missing)
+                for list_name, (normed_map, missing) in per_list.items()
+            )
         return _finalize(scores, best, docs, limit)
 
 
