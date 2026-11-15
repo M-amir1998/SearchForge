@@ -1,0 +1,110 @@
+{
+  "metric": "ndcg@10",
+  "strategy": "weighted_rrf",
+  "grid": [
+    {
+      "profile": "_tune_weighted_rrf_l0.5_d0.25",
+      "lexical": 0.5,
+      "dense": 0.25,
+      "train": 0.8993792256355123,
+      "validation": 0.8250346162550797
+    },
+    {
+      "profile": "_tune_weighted_rrf_l1.0_d0.5",
+      "lexical": 1.0,
+      "dense": 0.5,
+      "train": 0.8993792256355123,
+      "validation": 0.8250346162550797
+    },
+    {
+      "profile": "_tune_weighted_rrf_l1.5_d1.0",
+      "lexical": 1.5,
+      "dense": 1.0,
+      "train": 0.8993792256355123,
+      "validation": 0.8033695201475226
+    },
+    {
+      "profile": "_tune_weighted_rrf_l2.0_d1.0",
+      "lexical": 2.0,
+      "dense": 1.0,
+      "train": 0.8993792256355123
+    },
+    {
+      "profile": "_tune_weighted_rrf_l0.25_d0.25",
+      "lexical": 0.25,
+      "dense": 0.25,
+      "train": 0.8985451405272036
+    },
+    {
+      "profile": "_tune_weighted_rrf_l0.5_d0.5",
+      "lexical": 0.5,
+      "dense": 0.5,
+      "train": 0.8985451405272036
+    },
+    {
+      "profile": "_tune_weighted_rrf_l1.0_d1.0",
+      "lexical": 1.0,
+      "dense": 1.0,
+      "train": 0.8985451405272036
+    },
+    {
+      "profile": "_tune_weighted_rrf_l1.5_d0.25",
+      "lexical": 1.5,
+      "dense": 0.25,
+      "train": 0.8966450464256701
+    },
+    {
+      "profile": "_tune_weighted_rrf_l2.0_d0.25",
+      "lexical": 2.0,
+      "dense": 0.25,
+      "train": 0.8966450464256701
+    },
+    {
+      "profile": "_tune_weighted_rrf_l1.5_d0.5",
+      "lexical": 1.5,
+      "dense": 0.5,
+      "train": 0.8955551737280237
+    },
+    {
+      "profile": "_tune_weighted_rrf_l1.0_d0.25",
+      "lexical": 1.0,
+      "dense": 0.25,
+      "train": 0.8947018947270099
+    },
+    {
+      "profile": "_tune_weighted_rrf_l2.0_d0.5",
+      "lexical": 2.0,
+      "dense": 0.5,
+      "train": 0.8947018947270099
+    },
+    {
+      "profile": "_tune_weighted_rrf_l0.25_d0.5",
+      "lexical": 0.25,
+      "dense": 0.5,
+      "train": 0.8885281863946747
+    },
+    {
+      "profile": "_tune_weighted_rrf_l0.5_d1.0",
+      "lexical": 0.5,
+      "dense": 1.0,
+      "train": 0.8885281863946747
+    },
+    {
+      "profile": "_tune_weighted_rrf_l0.25_d1.0",
+      "lexical": 0.25,
+      "dense": 1.0,
+      "train": 0.8775413625568074
+    }
+  ],
+  "best_weights": {
+    "lexical": 0.5,
+    "dense": 0.25
+  },
+  "validation": 0.8250346162550797,
+  "test": 0.9184205081014847,
+  "baseline_test": 0.9138985506798004,
+  "notes": [
+    "train=23 validation=13 test=20 queries",
+    "weights chosen on validation; test reported once"
+  ]
+}

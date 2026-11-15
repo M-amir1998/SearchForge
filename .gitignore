@@ -64,3 +64,4 @@ results/**/*.parquet
 Thumbs.db
 .idea/
 .vscode/
+results/beir-scifact/hard_negatives.jsonl

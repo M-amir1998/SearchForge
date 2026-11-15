@@ -1,0 +1,77 @@
+{
+  "examples": [
+    {
+      "query": "ERR-4012",
+      "filters": null,
+      "planned_profile": "lexical",
+      "query_class": "identifier",
+      "top": [
+        [
+          "ERR-4012",
+          8.7103
+        ],
+        [
+          "KB-OPS-008",
+          5.209
+        ],
+        [
+          "ERR-4090",
+          3.3733
+        ]
+      ],
+      "latency_ms": 4.1
+    },
+    {
+      "query": "how often do we have to change our credentials",
+      "filters": null,
+      "planned_profile": "hybrid_rerank",
+      "query_class": "complex_semantic",
+      "top": [
+        [
+          "KB-API-003",
+          1.4667
+        ],
+        [
+          "KB-OPS-001",
+          0.8333
+        ],
+        [
+          "KB-ML-006",
+          0.6667
+        ]
+      ],
+      "latency_ms": 10.88
+    },
+    {
+      "query": "rollback",
+      "filters": {
+        "published": {
+          "gte": "2024-01-01"
+        }
+      },
+      "planned_profile": "hybrid",
+      "query_class": "filter_heavy",
+      "top": [
+        [
+          "KB-OPS-002",
+          0.0328
+        ],
+        [
+          "KB-OPS-002",
+          0.032
+        ],
+        [
+          "KB-OPS-002",
+          0.032
+        ]
+      ],
+      "latency_ms": 4.87
+    }
+  ],
+  "context": "[S266AC272BB] Webhooks \u2014 Webhooks > Delivery\n# Webhooks\n\n## Delivery\nLumen sends webhook events as HTTP POST requests with a JSON body. Failed deliveries are retried with exponential backoff for up to 24 hours.\n\n[S91FBEFD3BA] Authentication \u2014 Authentication > Request ids\n## Request ids\nSend an `X-Request-Id` header to correlate client logs with server traces; the server generates one if it is missing.\n\n[S23FEBE6082] Postmortem: GPU Memory Exhaustion During Traffic Spike \u2014 Postmortem: GPU Memory Exhaustion During Traffic Spike > Root cause\n## Root cause\nContinuous batching admitted too many long sequences; `max_num_seqs` had been raised without a load test, so the KV cache did not fit in accelerator memory.\n\n[SC133CD426E] RetryPolicy Configuration \u2014 RetryPolicy Configuration > Jitter\n## Jitter\nFull jitter is enabled by default to avoid synchronized retries from many clients.\n\n[S69387CC30B] Idempotency Keys \u2014 Idempotency Keys > Purpose\n# Idempotency Keys\n\n## Purpose\nSend an `Idempotency-Key` header on POST requests so that retrying a request after a network failure does not create a second payment, job or resource.\n\n[S43BF09212C] Load Shedding and Rate Limiting \u2014 Load Shedding and Rate Limiting > Client guidance\n## Client guidance\nClients must back off exponentially and respect Retry-After instead of retrying immediately.\n\n[S69C5F3B428] On-Call Handbook \u2014 On-Call Handbook > Rotation\n# On-Call Handbook\n\n## Rotation\nEach team runs a weekly on-call rotation with a primary and a secondary engineer. Handoff happens every Monday at 10:00 with a short review of open alerts.",
+  "citation_validity": {
+    "citations": 7,
+    "invalid": [],
+    "valid_rate": 1.0
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "candidate": "B4-hybrid-rerank",
+  "passed": true,
+  "checks": [
+    {
+      "name": "ndcg_at_10_min_delta",
+      "passed": true,
+      "observed": 0.013853387094960867,
+      "threshold": -0.005,
+      "detail": "mean \u0394nDCG@10 (candidate \u2212 baseline)"
+    },
+    {
+      "name": "max_query_regression_rate",
+      "passed": true,
+      "observed": 0.05,
+      "threshold": 0.1,
+      "detail": "share of queries whose ndcg@10 dropped"
+    },
+    {
+      "name": "no_critical_regressions",
+      "passed": true,
+      "observed": 0,
+      "threshold": 0,
+      "detail": "none"
+    }
+  ]
+}
