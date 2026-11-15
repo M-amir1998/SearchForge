@@ -1,0 +1,3 @@
+# Fixed hybrid+rerank vs adaptive query planning (second study, local scale).
+include: pkg:fixture/adaptive.yaml
+base_config: ../evaluations/fixture.yaml

@@ -1,0 +1,16 @@
+# FIRST REAL STUDY (prepared, run manually): BEIR SciFact, CPU-feasible (~5.2k docs, 300 test queries).
+# 1. searchforge datasets fetch-beir scifact --out data/beir     (downloads ~3 MB; data/ is git-ignored)
+# 2. searchforge benchmark configs/benchmarks/scifact.yaml --out results/scifact
+# Upstream licence terms apply to the data; it is never committed to this repository.
+name: beir-scifact
+base_config: ../evaluations/scifact.yaml
+baseline: B0-bm25
+splits: null
+repeats: 1
+throughput: {enabled: true, threads: 4, queries: 300}
+systems:
+  - {name: B0-bm25, profile: lexical}
+  - {name: B1-dense, profile: dense}
+  - {name: B2-hybrid-rrf, profile: hybrid}
+  - {name: B4-hybrid-rerank, profile: hybrid_rerank}
+  - {name: B5-adaptive, profile: adaptive}

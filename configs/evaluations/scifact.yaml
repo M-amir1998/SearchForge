@@ -1,0 +1,20 @@
+# BEIR SciFact (download first; see configs/benchmarks/scifact.yaml). Paths relative to this file.
+workspace: .searchforge
+corpus:
+  id: beir-scifact
+  sources:
+    - id: scifact
+      path: ../../data/beir/scifact/corpus.jsonl
+      id_field: _id
+      text_field: text
+      title_field: title
+chunking: {strategy: sentence, max_chars: 1200, overlap_chars: 150, min_chars: 80}
+index:
+  name: scifact
+  data_profile: small
+  dense:
+    provider: tfidf
+    tfidf: {svd_components: 256, ngram_max: 1}
+evaluation:
+  queries: ../../data/beir/scifact/queries.searchforge.jsonl
+  qrels: ../../data/beir/scifact/qrels/test.tsv

@@ -1,0 +1,56 @@
+{"query_id": "q-kw-01", "text": "api key rotation", "query_type": "keyword", "split": "train", "severity": "critical", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-kw-02", "text": "rollback procedure", "query_type": "keyword", "split": "validation", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-kw-03", "text": "cursor pagination page size", "query_type": "keyword", "split": "test", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-kw-04", "text": "webhook retries backoff", "query_type": "keyword", "split": "train", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-kw-05", "text": "database backup restore drill", "query_type": "keyword", "split": "test", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-kw-06", "text": "int8 quantization accuracy", "query_type": "keyword", "split": "train", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-kw-07", "text": "on-call escalation", "query_type": "keyword", "split": "validation", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-kw-08", "text": "feature store point-in-time joins", "query_type": "keyword", "split": "test", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-kw-09", "text": "schema evolution compatibility", "query_type": "keyword", "split": "train", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-kw-10", "text": "travel expense receipts", "query_type": "keyword", "split": "test", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-kw-11", "text": "rate limit 429", "query_type": "keyword", "split": "train", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-kw-12", "text": "capacity headroom forecast", "query_type": "keyword", "split": "validation", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-sem-01", "text": "how often do we have to change our credentials", "query_type": "semantic", "split": "train", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-sem-02", "text": "undo a bad release", "query_type": "semantic", "split": "validation", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-sem-03", "text": "the inference service ran out of graphics card memory", "query_type": "semantic", "split": "test", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-sem-04", "text": "make a model smaller so it runs on a laptop", "query_type": "semantic", "split": "train", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-sem-05", "text": "what happens when a client sends too many requests", "query_type": "semantic", "split": "test", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-sem-06", "text": "avoid charging a customer twice when a request is retried", "query_type": "semantic", "split": "train", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-sem-07", "text": "prove that a callback really came from us", "query_type": "semantic", "split": "validation", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-sem-08", "text": "keep personal information anonymous in analytics", "query_type": "semantic", "split": "test", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-sem-09", "text": "group many generation requests together to keep the accelerator busy", "query_type": "semantic", "split": "train", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-sem-10", "text": "why did users see outdated search answers", "query_type": "semantic", "split": "test", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-sem-11", "text": "who gets woken up at night when production breaks", "query_type": "semantic", "split": "train", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-sem-12", "text": "add machines automatically when workloads cannot be scheduled", "query_type": "semantic", "split": "validation", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-sem-13", "text": "how do we know if search results are any good", "query_type": "semantic", "split": "test", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-sem-14", "text": "how long do we keep logs", "query_type": "semantic", "split": "train", "severity": "important", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-id-01", "text": "ERR-4012", "query_type": "identifier", "split": "train", "severity": "critical", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-id-02", "text": "RetryPolicy.max_attempts", "query_type": "identifier", "split": "validation", "severity": "critical", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-id-03", "text": "next_page_token", "query_type": "identifier", "split": "test", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-id-04", "text": "X-Lumen-Signature", "query_type": "identifier", "split": "train", "severity": "critical", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-id-05", "text": "Idempotency-Key", "query_type": "identifier", "split": "test", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-id-06", "text": "ERR-5003", "query_type": "identifier", "split": "train", "severity": "important", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-id-07", "text": "max_num_seqs", "query_type": "identifier", "split": "validation", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-id-08", "text": "kv_cache_fraction", "query_type": "identifier", "split": "test", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-id-09", "text": "ERR-4090", "query_type": "identifier", "split": "train", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-id-10", "text": "X-Request-Id", "query_type": "identifier", "split": "test", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-id-11", "text": "backoff_multiplier", "query_type": "identifier", "split": "train", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-id-12", "text": "ERR-5040", "query_type": "identifier", "split": "validation", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-amb-01", "text": "rotation", "query_type": "ambiguous", "split": "train", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-amb-02", "text": "certificate", "query_type": "ambiguous", "split": "validation", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-amb-03", "text": "cache", "query_type": "ambiguous", "split": "test", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-amb-04", "text": "batching", "query_type": "ambiguous", "split": "train", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-amb-05", "text": "retention", "query_type": "ambiguous", "split": "test", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-amb-06", "text": "signature", "query_type": "ambiguous", "split": "train", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-amb-07", "text": "timeout", "query_type": "ambiguous", "split": "validation", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-amb-08", "text": "index version", "query_type": "ambiguous", "split": "test", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-flt-01", "text": "rollback", "query_type": "filter", "split": "train", "severity": "normal", "filters": {"published": {"gte": "2024-01-01"}}, "provenance": "synthetic", "notes": "legacy rollback page (2022) must be excluded by the date filter"}
+{"query_id": "q-flt-02", "text": "secrets", "query_type": "filter", "split": "validation", "severity": "important", "filters": {"language": "de"}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-flt-03", "text": "outage root cause", "query_type": "filter", "split": "test", "severity": "normal", "filters": {"category": "incident"}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-flt-04", "text": "certificate expiry", "query_type": "filter", "split": "train", "severity": "normal", "filters": {"category": "incident"}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-flt-05", "text": "retries", "query_type": "filter", "split": "test", "severity": "normal", "filters": {"category": "api"}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-flt-06", "text": "batch jobs", "query_type": "filter", "split": "train", "severity": "normal", "filters": {"category": "release-notes"}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-flt-07", "text": "policy", "query_type": "filter", "split": "validation", "severity": "normal", "filters": {"category": "security", "published": {"gte": "2025-01-01"}}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-flt-08", "text": "category:security secrets leaked", "query_type": "filter", "split": "test", "severity": "normal", "filters": {}, "provenance": "synthetic", "notes": "inline filter syntax; the planner extracts category:security"}
+{"query_id": "q-flt-09", "text": "memory", "query_type": "filter", "split": "train", "severity": "normal", "filters": {"team": "ml-platform"}, "provenance": "synthetic", "notes": ""}
+{"query_id": "q-flt-10", "text": "webhook", "query_type": "filter", "split": "test", "severity": "normal", "filters": {"published": {"gte": "2025-03-01", "lt": "2025-04-01"}}, "provenance": "synthetic", "notes": ""}

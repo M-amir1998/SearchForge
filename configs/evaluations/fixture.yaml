@@ -1,0 +1,5 @@
+# Evaluation config for the bundled fixture collection.
+# Everything (corpus, chunking, index, profiles, queries, qrels, gates) comes from the packaged
+# definition; override any key below. Workspace paths resolve against the current directory.
+include: pkg:fixture/fixture.yaml
+workspace: .searchforge

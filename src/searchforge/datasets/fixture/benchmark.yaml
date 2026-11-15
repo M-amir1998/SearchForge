@@ -1,0 +1,71 @@
+# Core experiment matrix (B0–B5) plus fusion, candidate-depth and chunking experiments.
+# Reported on the TEST split only. Weighted-RRF weights here are a priori (not tuned on test);
+# use `searchforge tune` for train/validation-based tuning.
+name: fixture-core-matrix
+base_config: fixture.yaml
+baseline: B0-bm25
+splits: [test]
+repeats: 3
+throughput: {enabled: true, threads: 4, queries: 120}
+
+systems:
+  # --- core matrix -----------------------------------------------------------------
+  - {name: B0-bm25, profile: lexical, description: "SQLite FTS5 BM25"}
+  - {name: B1-dense, profile: dense, description: "TF-IDF + LSA (128d), exact inner product"}
+  - {name: B2-hybrid-rrf, profile: hybrid, description: "lexical + dense, RRF k=60"}
+  - {name: B3-weighted-rrf, profile: weighted_hybrid, description: "weighted RRF (lexical 1.0, dense 0.5), a priori"}
+  - {name: B4-hybrid-rerank, profile: hybrid_rerank, description: "hybrid + lexical-feature reranker top-50"}
+  - {name: B5-adaptive, profile: adaptive, description: "rules-based query planner"}
+
+  # --- fusion experiment ---------------------------------------------------------------
+  - {name: F1-normalized-minmax, group: fusion, profile: hybrid_normalized, description: "min-max score fusion 0.5/0.5"}
+  - name: F2-normalized-zscore
+    group: fusion
+    profile: hybrid_normalized
+    description: "z-score score fusion 0.5/0.5"
+    profile_overrides: {fusion: {normalization: zscore}}
+  - {name: F3-hybrid-rewrite, group: fusion, profile: hybrid_rewrite, description: "RRF + acronym/synonym multi-query"}
+
+  # --- candidate depth experiment ------------------------------------------------------
+  - name: D20-rerank-20
+    group: depth
+    profile: hybrid_rerank
+    description: "retrieve 20 → rerank 20"
+    profile_overrides: {candidate_k: 20, reranker: {top_n: 20}}
+  - name: D50-rerank-50
+    group: depth
+    profile: hybrid_rerank
+    description: "retrieve 50 → rerank 50"
+    profile_overrides: {candidate_k: 50, reranker: {top_n: 50}}
+  - name: D100-rerank-100
+    group: depth
+    profile: hybrid_rerank
+    description: "retrieve 100 → rerank 100"
+    profile_overrides: {candidate_k: 100, reranker: {top_n: 100}}
+
+  # --- chunking experiment (separate indexes) ---------------------------------------------
+  - name: C1-fixed-64tok
+    group: chunking
+    profile: hybrid
+    description: "fixed 64 tokens, no overlap"
+    config_overrides:
+      index: {name: fixture-fixed64}
+      chunking: {strategy: fixed_token, max_tokens: 64, overlap_tokens: 0, min_chars: 20}
+  - name: C2-fixed-128tok-ov32
+    group: chunking
+    profile: hybrid
+    description: "fixed 128 tokens, 32 overlap"
+    config_overrides:
+      index: {name: fixture-fixed128}
+      chunking: {strategy: fixed_token, max_tokens: 128, overlap_tokens: 32, min_chars: 20}
+  - name: C3-sentence-400
+    group: chunking
+    profile: hybrid
+    description: "sentence packing 400 chars, 80 overlap"
+    config_overrides:
+      index: {name: fixture-sentence400}
+      chunking: {strategy: sentence, max_chars: 400, overlap_chars: 80, min_chars: 40}
+  - name: C4-section-1200
+    group: chunking
+    profile: hybrid
+    description: "section-aware 1200 chars (default index)"

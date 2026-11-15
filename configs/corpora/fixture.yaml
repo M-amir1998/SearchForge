@@ -1,0 +1,2 @@
+# Corpus-only view of the fixture collection (used by `searchforge corpus inspect`).
+include: pkg:fixture/fixture.yaml

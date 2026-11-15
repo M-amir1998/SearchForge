@@ -1,0 +1,7 @@
+# CI-only variant: deterministic feature-hash embeddings (NOT semantic; see docs/methodology/dense-retrieval.md).
+include: pkg:fixture/fixture.yaml
+index:
+  name: fixture-hash
+  dense:
+    provider: hash
+    dimension: 256

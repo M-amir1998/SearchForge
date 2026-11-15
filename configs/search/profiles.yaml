@@ -1,0 +1,11 @@
+# Example custom profiles; merge into any config with `include:`.
+search:
+  profiles:
+    hybrid_mmr:
+      description: Hybrid RRF with MMR diversification (lambda 0.7) and max 2 chunks per document
+      retrievers: [lexical, dense]
+      diversity: {mmr_lambda: 0.7, max_per_document: 2}
+    lexical_rerank:
+      description: BM25 top-50 + lexical-feature reranker
+      retrievers: [lexical]
+      reranker: {type: lexical_features, top_n: 50}

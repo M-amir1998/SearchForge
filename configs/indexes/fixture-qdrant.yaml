@@ -1,0 +1,9 @@
+# Dense vectors in Qdrant instead of NumPy. location ":memory:" needs no server (CI-safe);
+# use `url: http://localhost:6333` with `docker compose --profile qdrant up -d`.
+include: pkg:fixture/fixture.yaml
+index:
+  name: fixture-qdrant
+  dense:
+    backend: qdrant
+    qdrant:
+      location: ":memory:"

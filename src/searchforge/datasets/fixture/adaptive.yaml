@@ -1,0 +1,14 @@
+# Second study (local): fixed hybrid + reranker vs the query-planned adaptive profile.
+# Evaluated on ALL splits (the planner rules are not tuned on this data's test split alone).
+name: fixture-adaptive
+base_config: fixture.yaml
+baseline: always-hybrid-rerank
+splits: null
+repeats: 5
+throughput: {enabled: true, threads: 4, queries: 120}
+measure_cache: false
+
+systems:
+  - {name: always-hybrid-rerank, profile: hybrid_rerank, description: "every query: lexical + dense + rerank"}
+  - {name: adaptive, profile: adaptive, description: "identifier → lexical; complex → hybrid + rerank; else hybrid"}
+  - {name: always-lexical, profile: lexical, description: "every query: BM25 only"}

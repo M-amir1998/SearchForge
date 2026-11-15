@@ -1,0 +1,11 @@
+# Optional neural variant (requires `searchforge[neural]` and a locally cached model).
+# Set allow_download: true once to fetch the checkpoint; pin `revision` to a commit hash.
+include: pkg:fixture/fixture.yaml
+index:
+  name: fixture-minilm
+  dense:
+    provider: sentence_transformer
+    model: sentence-transformers/all-MiniLM-L6-v2
+    revision: null
+    allow_download: false
+    batch_size: 32
