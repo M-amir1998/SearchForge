@@ -7,9 +7,9 @@ cd "$(dirname "$0")/.."
 step() { printf '\n==> %s\n' "$*"; }
 
 step "ruff"
-uv run ruff check src tests
+uv run ruff check src tests examples
 step "format"
-uv run ruff format --check src tests
+uv run ruff format --check src tests examples
 step "mypy --strict"
 uv run mypy
 step "pytest"
