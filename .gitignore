@@ -1,0 +1,64 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+
+# Tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+reports/junit*.xml
+
+# Secrets / local configuration — never commit
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+credentials*.json
+secrets*.yaml
+
+# SearchForge workspace: indexes, embedding caches, vector DB volumes, scratch
+.searchforge/
+**/.searchforge/
+/indexes/
+*.sqlite
+*.sqlite-journal
+*.sqlite-wal
+*.npy
+*.npz
+*.faiss
+*.safetensors
+*.bin
+*.pt
+*.onnx
+qdrant_storage/
+opensearch_data/
+
+# Downloaded datasets / private corpora (fetch locally, never commit)
+/data/
+datasets/raw/
+
+# Evaluation run outputs: only curated, small report folders are committed (see results/README.md)
+results/*
+!results/README.md
+!results/local-demo/
+results/local-demo/**/*.parquet
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
