@@ -60,7 +60,10 @@ def restore_embedder(spec: EmbeddingSpec, version_dir: Path, dense: DenseConfig)
     else:
         raise IndexVersionMismatch(f"unknown embedding provider in manifest: {spec.provider}")
     got = provider.spec
-    if got.dimension != spec.dimension or (spec.provider in ("tfidf", "hash") and got.revision != spec.revision):
+    pinned = spec.provider in ("tfidf", "hash") or (
+        spec.provider == "sentence_transformer" and spec.revision != "unpinned"
+    )
+    if got.dimension != spec.dimension or (pinned and got.revision != spec.revision):
         raise IndexVersionMismatch(
             f"embedding provider mismatch: index={spec.model}@{spec.revision}/{spec.dimension}, "
             f"loaded={got.model}@{got.revision}/{got.dimension}"

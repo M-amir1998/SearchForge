@@ -9,6 +9,7 @@ is not logged (traces carry the policy-controlled capture, hash-only by default)
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from fastapi import FastAPI, HTTPException
@@ -39,6 +40,9 @@ class SearchRequestBody(BaseModel):
     top_k: int = Field(default=10, ge=1, le=100)
     filters: dict[str, Any] | None = None
     profile: str | None = Field(default=None, max_length=64)
+
+
+_VERSION_RE = re.compile(r"^v[0-9A-Za-z]+-[0-9a-f]{8}$")
 
 
 def _status_for(exc: SearchForgeError) -> int:
@@ -149,7 +153,8 @@ def create_app(service: SearchService) -> FastAPI:
     @app.get("/indexes/{index_id}")
     def index_detail(index_id: str) -> dict[str, Any]:
         ref = index_id if "@" in index_id else f"{index_name}@{index_id}"
-        if not ref.startswith(index_name + "@"):
+        version = ref.split("@", 1)[1]
+        if not ref.startswith(index_name + "@") or not _VERSION_RE.match(version):
             raise HTTPException(status_code=404, detail={"error": "IndexNotFound"})
         try:
             manifest, _ = layout.resolve(ref)

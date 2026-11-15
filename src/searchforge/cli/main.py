@@ -383,6 +383,17 @@ def search(
 
 
 # ----------------------------------------------------------------------------- evaluate / compare
+def _parse_splits(split: list[str] | None) -> list[Any] | None:
+    from searchforge.domain.judgment import QuerySplit
+
+    if not split:
+        return None
+    try:
+        return [QuerySplit(s) for s in split]
+    except ValueError as exc:
+        raise typer.BadParameter("--split must be one of: train, validation, test") from exc
+
+
 def _eval_inputs(loaded: Any) -> tuple[Any, Any, Any]:
     from searchforge.evaluation.datasets import load_qrels, load_queries
 
@@ -401,16 +412,20 @@ def evaluate(
     repeats: int | None = None,
 ) -> None:
     """Evaluate profiles against qrels and write results/<run-id>/ for each."""
-    from searchforge.domain.judgment import QuerySplit
     from searchforge.evaluation.failures import analyze_failures
     from searchforge.evaluation.runner import evaluate as run_eval
     from searchforge.evaluation.runner import select_queries
     from searchforge.evaluation.store import write_run
 
-    loaded, handle, service = _service(config)
+    split_arg = _parse_splits(split)
+    try:
+        loaded, handle, service = _service(config)
+    except SearchForgeError as exc:
+        _fail(exc)
+        return
     try:
         ev, queries, qrels = _eval_inputs(loaded)
-        splits = [QuerySplit(s) for s in split] if split else ev.splits
+        splits = split_arg or ev.splits
         selected = select_queries(queries, splits)
         table = Table("profile", "queries", "nDCG@10", "Recall@20", "MRR", "MAP", "p50 ms", "p95 ms", "run dir")
         for prof in profile or ev.profiles:
@@ -423,7 +438,9 @@ def evaluate(
                 repeats=repeats or ev.latency_repeats,
                 threshold=ev.relevance_threshold,
             )
-            failures = analyze_failures(run, qrels, handle.chunk_store, handle.filter_schema)
+            failures = analyze_failures(
+                run, qrels, handle.chunk_store, handle.filter_schema, threshold=ev.relevance_threshold
+            )
             run_dir = write_run(
                 run, out, config=loaded.raw_dict(), manifest=handle.manifest.model_dump(mode="json"), failures=failures
             )
@@ -458,18 +475,22 @@ def compare(
     out: Path | None = typer.Option(None, help="write comparison JSON here"),
 ) -> None:
     """Per-query regression analysis BASELINE vs CANDIDATE profile, with quality gates."""
-    from searchforge.domain.judgment import QuerySplit
     from searchforge.evaluation.regression import compare_runs, evaluate_gates
     from searchforge.evaluation.runner import evaluate as run_eval
     from searchforge.evaluation.runner import select_queries
 
-    loaded, handle, service = _service(config)
-    _cand_loaded, cand_handle, cand_service = (
-        _service(candidate_config) if candidate_config else (loaded, handle, service)
-    )
+    split_arg = _parse_splits(split)
+    try:
+        loaded, handle, service = _service(config)
+        _cand_loaded, cand_handle, cand_service = (
+            _service(candidate_config) if candidate_config else (loaded, handle, service)
+        )
+    except SearchForgeError as exc:
+        _fail(exc)
+        return
     try:
         ev, queries, qrels = _eval_inputs(loaded)
-        splits = [QuerySplit(s) for s in split] if split else ev.splits
+        splits = split_arg or ev.splits
         selected = select_queries(queries, splits)
         base_run = run_eval(
             service,
@@ -490,7 +511,7 @@ def compare(
             repeats=ev.latency_repeats,
             threshold=ev.relevance_threshold,
         )
-        relevant = {q.query_id: sorted(qrels.relevant(q.query_id)) for q in selected}
+        relevant = {q.query_id: sorted(qrels.relevant(q.query_id, ev.relevance_threshold)) for q in selected}
         comp = compare_runs(base_run, cand_run, relevant_by_query=relevant, epsilon=ev.gates.regression_epsilon)
         sm = comp.summary
         console.print(
@@ -541,8 +562,10 @@ def tune(
 
     loaded, handle, service = _service(config)
     try:
-        _, queries, qrels = _eval_inputs(loaded)
-        res = tune_fusion_weights(service, queries, qrels, base_profile=base_profile, strategy=FusionName(strategy))
+        ev, queries, qrels = _eval_inputs(loaded)
+        res = tune_fusion_weights(
+            service, queries, qrels, base_profile=base_profile, strategy=FusionName(strategy), k_values=ev.k_values
+        )
     except SearchForgeError as exc:
         _fail(exc)
         return
@@ -586,8 +609,8 @@ def hard_negatives_build(
     loaded, handle, service = _service(config)
     try:
         ev, queries, qrels = _eval_inputs(loaded)
-        run = run_eval(service, queries, qrels, profile=profile, k_values=ev.k_values)
-        rows = mine_hard_negatives(run, qrels, max_rank=max_rank, per_query=per_query)
+        run = run_eval(service, queries, qrels, profile=profile, k_values=ev.k_values, threshold=ev.relevance_threshold)
+        rows = mine_hard_negatives(run, qrels, max_rank=max_rank, per_query=per_query, threshold=ev.relevance_threshold)
         write_hard_negatives(rows, out)
     finally:
         service.close()

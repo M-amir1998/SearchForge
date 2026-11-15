@@ -124,7 +124,7 @@ FusionImpl = ReciprocalRankFusion | NormalizedScoreFusion
 
 def build_fusion(config: FusionConfig) -> FusionImpl:
     if config.strategy is FusionName.WEIGHTED_RRF:
-        return WeightedRRF(k=config.k, weights=config.weights or {"lexical": 1.0, "dense": 1.0})
+        return WeightedRRF(k=config.k, weights=dict(config.weights))
     if config.strategy is FusionName.NORMALIZED:
         return NormalizedScoreFusion(weights=dict(config.weights), method=config.normalization)
     return ReciprocalRankFusion(k=config.k, weights=dict(config.weights))

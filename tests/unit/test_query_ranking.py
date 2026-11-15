@@ -205,7 +205,9 @@ def test_query_cache_key_is_version_aware() -> None:
         "explain": False,
     }
     k1 = query_cache_key(**base)  # type: ignore[arg-type]
-    assert k1 == query_cache_key(**{**base, "text": "rollback"})  # type: ignore[arg-type]
+    assert k1 == query_cache_key(**{**base, "text": "  Rollback  "})  # type: ignore[arg-type]
+    # case is significant: identifier detection (and therefore planning) is case-sensitive
+    assert k1 != query_cache_key(**{**base, "text": "rollback"})  # type: ignore[arg-type]
     for field, value in (
         ("index_id", "idx@v2"),
         ("planner_version", "p2"),

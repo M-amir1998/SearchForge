@@ -38,17 +38,29 @@ def point_id(chunk_id: str) -> str:
     return str(uuid.uuid5(_NAMESPACE, chunk_id))
 
 
+_IN_MEMORY_CLIENTS: dict[str, Any] = {}
+
+
 def make_client(cfg: QdrantConfig) -> Any:
+    """Create a client. ``:memory:`` clients are shared per process (one embedded store), so an
+    index built in-memory can be searched by the same process; they never persist across runs."""
     try:
         from qdrant_client import QdrantClient
     except ImportError as exc:  # pragma: no cover - only without the extra
         raise ConfigurationError("qdrant-client is not installed; install searchforge[qdrant]") from exc
     api_key = os.environ.get(cfg.api_key_env) if cfg.api_key_env else None
+    if cfg.api_key_env and not api_key:
+        raise ConfigurationError(f"environment variable {cfg.api_key_env} (Qdrant API key) is not set")
     if cfg.url:
         return QdrantClient(url=cfg.url, api_key=api_key, timeout=int(cfg.timeout_s))
     if cfg.path:
         return QdrantClient(path=cfg.path)
-    return QdrantClient(location=cfg.location or ":memory:")
+    location = cfg.location or ":memory:"
+    if location == ":memory:":
+        if location not in _IN_MEMORY_CLIENTS:
+            _IN_MEMORY_CLIENTS[location] = QdrantClient(location=location)
+        return _IN_MEMORY_CLIENTS[location]
+    return QdrantClient(location=location)
 
 
 def to_qdrant_filter(expr: FilterExpression) -> Any:

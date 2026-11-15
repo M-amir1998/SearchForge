@@ -58,6 +58,7 @@ def test_api_endpoints(mini_index: Mini) -> None:
     version = indexes["indexes"][0]["version"]
     assert client.get(f"/indexes/{version}").json()["chunks"] > 0
     assert client.get("/indexes/v0-missing").status_code == 404
+    assert client.get("/indexes/..%5C..%5Cetc").status_code == 404
     metrics = client.get("/metrics").text
     assert "searchforge_search_requests_total" in metrics and "searchforge_stage_latency_seconds" in metrics
     assert "rollback" not in metrics  # no query text in labels
@@ -117,6 +118,14 @@ def test_qdrant_adapter_in_memory(tmp_path: Path, mini_corpus: Path) -> None:
     # end-to-end build through the builder (embedded in-memory Qdrant per process)
     res = IndexBuilder(loaded).build()
     assert res.manifest.vector_backend == "qdrant"
+    handle = open_index(loaded.workspace, "qd", loaded.config)  # same process: shared in-memory store
+    service = SearchService(handle, loaded.config)
+    try:
+        resp = service.search("rollback release", profile="dense")
+        assert resp.results and not resp.degraded
+    finally:
+        service.close()
+        handle.close()
 
 
 def test_opensearch_query_dsl_and_fake_client() -> None:

@@ -20,6 +20,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 
 from searchforge.domain.query import QueryAnalysis, QueryClass
+from searchforge.parsing.stopwords import STOPWORDS
 
 _QUOTED = re.compile(r'"([^"]{1,200})"')
 _INLINE_FILTER = re.compile(r'\b([a-z][a-z0-9_]{0,63}):("([^"]{1,100})"|[^\s"]{1,100})')
@@ -35,66 +36,6 @@ _IDENTIFIER_PATTERNS = (
 )
 QUESTION_WORDS = frozenset(
     {"how", "why", "what", "when", "where", "which", "who", "can", "should", "does", "do", "is", "are"}
-)
-STOPWORDS = frozenset(
-    [
-        "a",
-        "an",
-        "and",
-        "are",
-        "as",
-        "at",
-        "be",
-        "but",
-        "by",
-        "can",
-        "do",
-        "does",
-        "for",
-        "from",
-        "has",
-        "have",
-        "how",
-        "i",
-        "if",
-        "in",
-        "into",
-        "is",
-        "it",
-        "its",
-        "me",
-        "my",
-        "of",
-        "on",
-        "or",
-        "our",
-        "should",
-        "so",
-        "than",
-        "that",
-        "the",
-        "their",
-        "them",
-        "then",
-        "there",
-        "these",
-        "they",
-        "this",
-        "to",
-        "was",
-        "we",
-        "what",
-        "when",
-        "where",
-        "which",
-        "who",
-        "why",
-        "will",
-        "with",
-        "would",
-        "you",
-        "your",
-    ]
 )
 
 

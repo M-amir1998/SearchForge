@@ -1,7 +1,7 @@
 """Persist evaluation runs: ``results/<run-id>/`` with config, manifest, metrics and Parquet tables.
 
-Query text in persisted tables follows a text policy: synthetic and public-benchmark
-queries are stored verbatim; anything production-derived is redacted.
+Query text in persisted tables follows a text policy: manual, synthetic and public-benchmark
+queries are stored verbatim; production-derived and failure-derived queries are redacted.
 """
 
 from __future__ import annotations

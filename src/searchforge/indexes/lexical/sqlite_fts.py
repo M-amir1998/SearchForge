@@ -24,72 +24,13 @@ from searchforge.domain.filters import FilterExpression
 from searchforge.domain.result import Candidate
 from searchforge.filtering.translate import to_sqlite
 from searchforge.indexes.sqlite_util import ThreadLocalConnections, connect
+from searchforge.parsing.stopwords import STOPWORDS
 
 TOKEN_RE = re.compile(r"\w+", re.UNICODE)
 MAX_MATCH_TERMS = 64
 
 #: Small English stopword list. Removing these from the OR-query reduces candidate
 #: noise; BM25's IDF would down-weight them anyway. Never applied inside phrases.
-STOPWORDS = frozenset(
-    [
-        "a",
-        "an",
-        "and",
-        "are",
-        "as",
-        "at",
-        "be",
-        "but",
-        "by",
-        "can",
-        "do",
-        "does",
-        "for",
-        "from",
-        "has",
-        "have",
-        "how",
-        "i",
-        "if",
-        "in",
-        "into",
-        "is",
-        "it",
-        "its",
-        "me",
-        "my",
-        "of",
-        "on",
-        "or",
-        "our",
-        "should",
-        "so",
-        "than",
-        "that",
-        "the",
-        "their",
-        "them",
-        "then",
-        "there",
-        "these",
-        "they",
-        "this",
-        "to",
-        "was",
-        "we",
-        "what",
-        "when",
-        "where",
-        "which",
-        "who",
-        "why",
-        "will",
-        "with",
-        "would",
-        "you",
-        "your",
-    ]
-)
 
 _TOKENIZERS = {
     "porter unicode61": "porter unicode61",

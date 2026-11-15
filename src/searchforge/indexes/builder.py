@@ -202,6 +202,7 @@ class IndexBuilder:
             index_types=types,
             lexical_backend=idx.lexical.backend if idx.lexical.enabled else None,
             lexical_config=idx.lexical.model_dump(mode="json") if idx.lexical.enabled else {},
+            dense_config=self._dense_identity() if idx.dense.enabled else {},
             vector_backend=idx.dense.backend if idx.dense.enabled else None,
             embedding=provider.spec if provider is not None else None,
             chunking_config=self.cfg.chunking.model_dump(mode="json"),
@@ -292,6 +293,7 @@ class IndexBuilder:
     ) -> BuildResult:
         """Derive a new version from ``parent_ref`` (default: CURRENT) with only changed docs."""
         check_profile_allows_local(self.loaded)
+        check_disk_budget(self.loaded)
         parent, parent_dir = self.layout.resolve(parent_ref or self.name)
         self._check_compatible(parent)
         if parent.vector_backend == "qdrant":
@@ -414,6 +416,10 @@ class IndexBuilder:
                 cache.close()
         return BuildResult(manifest, path, report=report)
 
+    def _dense_identity(self) -> dict[str, object]:
+        """Dense settings that change vectors (cache/batch size excluded)."""
+        return self.cfg.index.dense.model_dump(mode="json", exclude={"cache_enabled", "batch_size", "allow_download"})
+
     def _check_compatible(self, parent: IndexManifest) -> None:
         reasons = []
         if parent.chunker_fingerprint != self.chunker.fingerprint():
@@ -427,6 +433,8 @@ class IndexBuilder:
             reasons.append("dense enablement changed")
         elif parent.embedding is not None and parent.embedding.provider != idx.dense.provider.value:
             reasons.append("embedding provider changed")
+        elif idx.dense.enabled and parent.dense_config and parent.dense_config != self._dense_identity():
+            reasons.append("dense configuration changed (model, revision, dimension, TF-IDF or backend)")
         if parent.filter_schema != {k: v.value for k, v in self.schema.fields.items()}:
             reasons.append("filter schema changed")
         if reasons:

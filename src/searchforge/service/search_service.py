@@ -117,6 +117,7 @@ class SearchService:
         """Add/replace a profile at runtime (experiments, tuning). Planner rules are unchanged."""
         self.profiles[name] = profile
         self.static_planner.profiles[name] = profile
+        self.cache.clear()  # cached responses for a replaced profile must not be served
 
     def reranker_for(self, cfg: RerankerConfig) -> Reranker | None:
         if cfg.type is RerankerName.NONE:
@@ -290,10 +291,19 @@ class SearchService:
         # ---------------------------------------------------------------- hydrate
         st = time.perf_counter()
         scored = self._hydrate(fused, lists, filters, degraded)
-        trace.add_timing("hydrate", _ms(st))
+        hydrate_ms = _ms(st)
+        trace.add_timing("hydrate", hydrate_ms)
+        self.metrics.observe_stage("hydrate", hydrate_ms / 1000)
 
         # ---------------------------------------------------------------- rerank
-        reranker = self.reranker_for(plan.reranker)
+        try:
+            reranker = self.reranker_for(plan.reranker)
+        except RerankerFailure as exc:
+            if not self.search_cfg.timeouts.reranker_fallback:
+                raise
+            self.metrics.error("rerank", type(exc).__name__)
+            degraded.append("reranker_unavailable")
+            reranker = None
         trace.reranker = reranker.name if reranker else None
         if reranker is not None and scored:
             scored = self._rerank(reranker, plan, query.text, scored, deadline, trace, degraded)
@@ -320,7 +330,7 @@ class SearchService:
         total_ms = _ms(t0)
         trace.add_timing("total", total_ms)
         for reason in degraded:
-            self.metrics.degraded.labels(reason=reason.split(":", 1)[0]).inc()
+            self.metrics.degraded.labels(reason=reason.split(":", 1)[0].split("#", 1)[0]).inc()
         response = SearchResponse(
             query_id=qid,
             results=results,

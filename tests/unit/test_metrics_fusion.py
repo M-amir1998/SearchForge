@@ -139,5 +139,5 @@ def test_zscore_and_build_fusion() -> None:
     fused = NormalizedScoreFusion(method="zscore").fuse({"lexical": L1, "dense": L2}, 10)
     assert fused[0].chunk_id == "a"
     assert build_fusion(FusionConfig(strategy=FusionName.RRF)).name == "rrf"
-    assert build_fusion(FusionConfig(strategy=FusionName.WEIGHTED_RRF)).name == "weighted_rrf"
+    assert build_fusion(FusionConfig(strategy=FusionName.WEIGHTED_RRF, weights={"lexical": 1.0})).name == "weighted_rrf"
     assert build_fusion(FusionConfig(strategy=FusionName.NORMALIZED)).name == "normalized"

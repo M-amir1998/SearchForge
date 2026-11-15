@@ -258,7 +258,10 @@ def run_benchmark(spec_path: Path, *, workspace: Path | None = None) -> Benchmar
         }
         cache: dict[str, Any] = {}
         if spec.measure_cache:
-            _, _, service = handles[next(iter(handles))]
+            baseline_index = validate_config(
+                deep_merge(base_raw, baseline.spec.config_overrides), base_path.parent, base_path
+            ).config.index.name
+            _, _, service = handles[baseline_index]
             cache = _cache_effect(service, baseline.spec.name, queries)
     finally:
         for _, handle, service in handles.values():

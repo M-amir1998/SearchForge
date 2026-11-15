@@ -5,8 +5,9 @@
 * Persistence is pickle-free: vocabulary/params as JSON, ``idf`` and SVD
   components as ``.npy`` loaded with ``allow_pickle=False`` — a downloaded index
   cannot execute code.
-* Transform is re-implemented with NumPy/SciPy sparse ops (identical math to
-  scikit-learn's ``TfidfTransformer``: sublinear ``1 + log(tf)``, idf weighting, L2).
+* Transform uses scikit-learn's ``CountVectorizer`` with the frozen vocabulary for counting, then
+  applies the TF-IDF math explicitly with SciPy sparse ops (identical to scikit-learn's
+  ``TfidfTransformer``: sublinear ``1 + log(tf)``, idf weighting, L2), verified by a unit test.
 * With SVD (LSA), vectors capture term co-occurrence ("semantic-ish"); without it,
   they are dense TF-IDF and essentially lexical. Either way this is a *baseline*;
   BM25 lexical retrieval is kept separate.
@@ -26,7 +27,7 @@ import numpy as np
 from scipy import sparse
 
 from searchforge.config.models import TfidfConfig
-from searchforge.domain.ids import canonical_json, short_hash
+from searchforge.domain.ids import canonical_json, sha256_hex, short_hash
 from searchforge.domain.index import EmbeddingSpec
 from searchforge.embeddings.base import EMBED_PREPROCESSING_VERSION, FloatMatrix, l2_normalize
 from searchforge.errors import EmbeddingFailure, IndexIntegrityError
@@ -101,8 +102,8 @@ class TfidfEmbeddingProvider:
         dim = self._components.shape[0] if self._components is not None else len(self._vocabulary)
         state_hash = short_hash(
             canonical_json(sorted(self._vocabulary.items()))
-            + self._idf.tobytes().hex()[:4096]
-            + (self._components.tobytes().hex()[:4096] if self._components is not None else ""),
+            + sha256_hex(self._idf.tobytes())
+            + (sha256_hex(self._components.tobytes()) if self._components is not None else ""),
             12,
         )
         self._spec = EmbeddingSpec(

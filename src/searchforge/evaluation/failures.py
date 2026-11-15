@@ -25,7 +25,7 @@ from searchforge.domain.judgment import Qrels
 from searchforge.errors import InvalidFilter
 from searchforge.evaluation.runner import QueryOutcome, RunResult
 from searchforge.indexes.chunk_store import SqliteChunkStore
-from searchforge.query.analysis import STOPWORDS
+from searchforge.parsing.stopwords import STOPWORDS
 
 _WORD = re.compile(r"\w+", re.UNICODE)
 
@@ -186,7 +186,10 @@ def _classify(
     if lex is None and dense is None:
         if used_dense:
             return FailureCategory.SEMANTIC_MISS, "neither lexical nor dense retrieval surfaced the document"
-        return FailureCategory.MISSED_LEXICAL_MATCH, "lexical-only plan; the document shares no query terms"
+        return (
+            FailureCategory.MISSED_LEXICAL_MATCH,
+            "lexical-only plan; document not among the lexical candidates",
+        )
     if lex is not None and (dense is None or (lex <= dense)):
         return FailureCategory.MISSED_LEXICAL_MATCH, f"weak lexical match (lexical rank {lex}) and no semantic rescue"
     return FailureCategory.SEMANTIC_MISS, f"weak semantic match (dense rank {dense})"

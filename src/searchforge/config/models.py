@@ -224,6 +224,12 @@ class FusionConfig(StrictModel):
             raise ValueError("fusion weights must be non-negative")
         return value
 
+    @model_validator(mode="after")
+    def _weighted_needs_weights(self) -> FusionConfig:
+        if self.strategy is FusionName.WEIGHTED_RRF and not self.weights:
+            raise ValueError("fusion.strategy=weighted_rrf requires explicit fusion.weights")
+        return self
+
 
 class RerankerName(StrEnum):
     NONE = "none"
@@ -238,7 +244,8 @@ class RerankerConfig(StrictModel):
     revision: str | None = None
     batch_size: int = Field(default=32, ge=1)
     allow_download: bool = False
-    #: Interpolation between first-stage score and lexical features (lexical_features only).
+    #: Per-feature weights for the lexical_features reranker (prior, coverage, title_coverage, phrase,
+    #: identifier, proximity); the prior is 1/(1+first-stage position).
     feature_weights: dict[str, float] = Field(default_factory=dict)
 
 

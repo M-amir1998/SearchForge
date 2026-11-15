@@ -58,11 +58,13 @@ class Qrels:
 
     def __init__(self, judgments: Iterable[RelevanceJudgment] = ()) -> None:
         self._data: dict[str, dict[str, float]] = defaultdict(dict)
+        self._source: dict[tuple[str, str], str] = {}
         for j in judgments:
             self.add(j)
 
     def add(self, judgment: RelevanceJudgment) -> None:
         self._data[judgment.query_id][judgment.document_id] = float(judgment.relevance)
+        self._source[(judgment.query_id, judgment.document_id)] = judgment.source
 
     def for_query(self, query_id: str) -> Mapping[str, float]:
         return self._data.get(query_id, {})
@@ -75,7 +77,7 @@ class Qrels:
 
     def judgments(self) -> list[RelevanceJudgment]:
         return [
-            RelevanceJudgment(query_id=q, document_id=d, relevance=r)
+            RelevanceJudgment(query_id=q, document_id=d, relevance=r, source=self._source.get((q, d), "manual"))
             for q in sorted(self._data)
             for d, r in sorted(self._data[q].items())
         ]

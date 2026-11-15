@@ -38,10 +38,13 @@ def mine_hard_negatives(
         judgments = qrels.for_query(o.query.query_id)
         seen: set[str] = set()
         taken = 0
-        for rank, (chunk_id, doc_id, score, sources) in enumerate(o.chunk_ranking[:max_rank], start=1):
+        for chunk_id, doc_id, score, sources in o.chunk_ranking:
             if doc_id in seen:
                 continue
             seen.add(doc_id)
+            rank = len(seen)  # document-level rank (chunks collapsed, as in evaluation)
+            if rank > max_rank:
+                break
             if judgments.get(doc_id, 0.0) >= threshold:
                 continue
             out.append(
@@ -52,7 +55,7 @@ def mine_hard_negatives(
                     rank=rank,
                     score=float(score),
                     source_retrievers="+".join(sources),
-                    judged=doc_id in judgments,
+                    judged=doc_id in judgments,  # judged below the relevance threshold
                     run_name=run.name,
                 )
             )

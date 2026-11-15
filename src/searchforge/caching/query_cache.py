@@ -17,7 +17,7 @@ from searchforge.domain.filters import FilterExpression
 from searchforge.domain.ids import canonical_json, sha256_hex
 from searchforge.domain.result import SearchResponse
 
-KEY_VERSION = "qc-v1"
+KEY_VERSION = "qc-v2"
 
 
 def query_cache_key(
@@ -32,7 +32,7 @@ def query_cache_key(
 ) -> str:
     payload: dict[str, Any] = {
         "v": KEY_VERSION,
-        "q": " ".join(text.split()).lower(),
+        "q": " ".join(text.split()),
         "f": filters.canonical(),
         "i": index_id,
         "p": planner_version,

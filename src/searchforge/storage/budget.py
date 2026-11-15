@@ -110,7 +110,8 @@ def check_disk_budget(loaded: LoadedConfig) -> DiskEstimate:
 
 def check_profile_allows_local(loaded: LoadedConfig) -> None:
     profile = loaded.config.index.data_profile
-    if profile is DataProfile.LARGE and loaded.config.index.dense.backend == "numpy":
+    dense = loaded.config.index.dense
+    if profile is DataProfile.LARGE and dense.enabled and dense.backend == "numpy":
         raise StorageBudgetExceeded(
             "data_profile=large is external-backend/cloud mode; it is never executed with the "
             "local NumPy index. Configure dense.backend=qdrant (and a remote lexical backend)."

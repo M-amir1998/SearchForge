@@ -3,7 +3,7 @@
 Contract: input is the top-N hydrated candidates in first-stage order; output is
 the *same set* of candidates, sorted by the new score (descending), with
 ``signals.reranker_score``/``reranker_rank`` populated. Rerankers never add or
-drop candidates (property-tested).
+drop candidates (contract-tested in tests/unit).
 
 * :class:`NoOpReranker`            identity (baseline for marginal-value measurement)
 * :class:`LexicalFeatureReranker`  CPU-cheap hand-built features: query-term
@@ -22,7 +22,8 @@ from typing import Any
 
 from searchforge.domain.result import RankingSignals, ScoredChunk
 from searchforge.errors import RerankerFailure
-from searchforge.query.analysis import STOPWORDS, is_identifier
+from searchforge.parsing.stopwords import STOPWORDS
+from searchforge.query.analysis import is_identifier
 
 _WORD = re.compile(r"\w+", re.UNICODE)
 

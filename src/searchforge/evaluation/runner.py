@@ -2,7 +2,7 @@
 
 Measurement rules:
 * the query cache is bypassed (``use_cache=False``) so latency is real work;
-* one warm-up pass precedes measurement; each query then runs ``repeats`` times
+* a short warm-up (first 5 judged queries) precedes measurement; each query then runs ``repeats`` times
   and latency percentiles are computed over all measured samples;
 * rankings use ``ranking_depth`` (default 100 chunks) without altering the plan,
   then collapse to documents (see :mod:`searchforge.evaluation.metrics`);
@@ -77,8 +77,9 @@ class RunResult:
             groups[o.query.query_type].append(o)
         return {t: {**self.aggregate(g), "n": float(len(g))} for t, g in sorted(groups.items())}
 
-    def latency(self) -> dict[str, float]:
-        samples = [ms for o in self.scored for ms in o.latencies_ms]
+    def latency(self, outcomes: Sequence[QueryOutcome] | None = None) -> dict[str, float]:
+        items = self.scored if outcomes is None else outcomes
+        samples = [ms for o in items for ms in o.latencies_ms]
         if not samples:
             return {"p50_ms": 0.0, "p95_ms": 0.0, "p99_ms": 0.0, "mean_ms": 0.0, "samples": 0.0}
         return {
@@ -215,7 +216,7 @@ def evaluate(
                 query_class=str(decision.get("query_class", "")),
                 degraded=first.degraded,
                 stage_docs=stage_docs,
-                reranked=first.trace.reranker is not None,
+                reranked="rerank" in first.trace.latency_breakdown(),
                 rewrite_strategies=list((first.trace.rewrite or {}).get("strategies", [])),
             )
         )

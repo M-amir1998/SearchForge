@@ -9,6 +9,7 @@ are never deleted. ``dry_run`` is the default at the CLI.
 
 from __future__ import annotations
 
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -57,17 +58,28 @@ def storage_status(
     )
 
 
-def plan_cleanup(workspace: Path, *, include_old_versions: bool = False) -> CleanupPlan:
+PARTIAL_MIN_AGE_S = 3600.0
+
+
+def plan_cleanup(
+    workspace: Path, *, include_old_versions: bool = False, partial_min_age_s: float = PARTIAL_MIN_AGE_S
+) -> CleanupPlan:
     plan = CleanupPlan()
     candidates: list[tuple[Path, str]] = [
         (workspace / "cache", "embedding cache (recomputable)"),
         (workspace / "prepared", "prepared corpus exports (recomputable)"),
     ]
     layout = IndexLayout(workspace)
-    candidates += [(p, "abandoned partial index build") for p in layout.partials()]
+    now = time.time()
+    # A .partial directory younger than partial_min_age_s may belong to a running build.
+    candidates += [
+        (p, "abandoned partial index build") for p in layout.partials() if now - p.stat().st_mtime >= partial_min_age_s
+    ]
     if include_old_versions:
         for name in layout.names():
             current = layout.current_version(name)
+            if current is None:
+                continue  # never prune an index that has no serving version
             for manifest in layout.versions(name):
                 if manifest.version != current:
                     candidates.append(

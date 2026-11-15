@@ -294,7 +294,7 @@ def write_benchmark_report(result: BenchmarkResult, out_dir: Path) -> Path:
     pts = [Point(s.spec.name, s.row()["p95_ms"], float(s.row()["ndcg@10"] or 0.0)) for s in core]
     (out_dir / "plots" / "quality_latency.svg").write_text(
         scatter_svg(
-            pts, title="Quality vs latency (fixture collection, CPU)", x_label="p95 latency (ms)", y_label="nDCG@10"
+            pts, title=f"Quality vs latency - {result.spec.name} (CPU)", x_label="p95 latency (ms)", y_label="nDCG@10"
         ),
         encoding="utf-8",
     )

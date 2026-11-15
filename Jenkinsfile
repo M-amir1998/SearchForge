@@ -40,6 +40,8 @@ pipeline {
       steps {
         checkout scm
         sh 'git log -1 --format="%h %an %s"'
+        // Never archive a previous build's reports as this build's.
+        sh 'rm -rf reports dist && mkdir -p reports'
       }
     }
 
@@ -60,7 +62,8 @@ pipeline {
 
     stage('Lockfile Validation') {
       steps {
-        sh 'uv lock --check'
+        // UV_FROZEN=1 would turn `lock --check` into a validity-only check; unset it here.
+        sh 'env -u UV_FROZEN uv lock --check'
         sh 'uv sync --frozen --extra dev --extra qdrant'
         sh 'uv run searchforge doctor'
       }
@@ -156,9 +159,9 @@ pipeline {
           if ! command -v docker >/dev/null 2>&1 || ! docker info >/dev/null 2>&1; then
             echo "docker not available on this agent; skipping image build"; exit 0
           fi
+          trap 'docker image rm -f searchforge:ci-${BUILD_NUMBER} >/dev/null 2>&1 || true' EXIT
           docker build --pull -t searchforge:ci-${BUILD_NUMBER} .
           docker run --rm --memory 1g --cpus 2 searchforge:ci-${BUILD_NUMBER} doctor
-          docker image rm searchforge:ci-${BUILD_NUMBER}
         '''
       }
     }

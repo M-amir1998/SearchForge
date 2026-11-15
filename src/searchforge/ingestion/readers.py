@@ -155,7 +155,9 @@ class RecordMapper:
         created = parse_datetime(record.get(self.source.created_field)) if self.source.created_field else None
         updated = parse_datetime(record.get(self.source.updated_field)) if self.source.updated_field else None
         attributes = self._attributes(record, language)
-        document_id = make_document_id(explicit_id=explicit_id, source_key=source_key, record_key=record_key)
+        document_id = make_document_id(
+            explicit_id=explicit_id, source_key=f"{self.source.id}/{source_key}", record_key=record_key
+        )
         attributes["document_id"] = document_id
         hashed_meta = {
             "title": title,

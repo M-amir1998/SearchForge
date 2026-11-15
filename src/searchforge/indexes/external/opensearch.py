@@ -42,8 +42,9 @@ def make_client(cfg: OpenSearchConfig) -> Any:
     auth = None
     if cfg.username_env and cfg.password_env:
         user, pwd = os.environ.get(cfg.username_env), os.environ.get(cfg.password_env)
-        if user and pwd:
-            auth = (user, pwd)
+        if not (user and pwd):
+            raise ConfigurationError("OpenSearch credential environment variables are configured but not set")
+        auth = (user, pwd)
     return OpenSearch(hosts=cfg.hosts, http_auth=auth, verify_certs=cfg.verify_certs, timeout=cfg.timeout_s)
 
 

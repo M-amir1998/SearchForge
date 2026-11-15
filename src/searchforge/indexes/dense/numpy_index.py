@@ -75,6 +75,8 @@ class NumpyVectorIndex:
             )
         if not len(chunk_ids) == len(document_ids) == len(attributes) == vectors.shape[0]:
             raise ValueError("chunk_ids, document_ids, attributes and vectors must align")
+        if len(set(chunk_ids)) != len(chunk_ids):
+            raise ValueError("duplicate chunk id within batch")
         start = len(self._chunk_ids)
         for offset, cid in enumerate(chunk_ids):
             if cid in self._row_of and self._alive[self._row_of[cid]]:

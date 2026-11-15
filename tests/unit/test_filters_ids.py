@@ -145,3 +145,9 @@ def test_stable_ids() -> None:
     assert make_citation_id(c1) == make_citation_id(c1) and make_citation_id(c1).startswith("S")
     assert make_content_hash("t", {"a": 1}) != make_content_hash("t", {"a": 2})
     assert query_hash("Hello  World") == query_hash("hello world")
+
+
+def test_integer_filters_outside_int64_are_rejected() -> None:
+    with pytest.raises(InvalidFilter):
+        parse_filters({"year": 2**63}, SCHEMA)
+    assert parse_filters({"year": 2**63 - 1}, SCHEMA).conditions[0].value == 2**63 - 1

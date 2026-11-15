@@ -51,6 +51,7 @@ class IndexManifest(BaseModel):
     index_types: list[str]
     lexical_backend: str | None = None
     lexical_config: dict[str, Any] = Field(default_factory=dict)
+    dense_config: dict[str, Any] = Field(default_factory=dict)
     vector_backend: str | None = None
     embedding: EmbeddingSpec | None = None
     chunking_config: dict[str, Any]

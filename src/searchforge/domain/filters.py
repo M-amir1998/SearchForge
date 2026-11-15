@@ -23,6 +23,7 @@ from searchforge.errors import InvalidFilter
 
 _FIELD_NAME = re.compile(r"^[a-z][a-z0-9_]{0,63}$")
 MAX_SET_SIZE = 256
+INT64_MIN, INT64_MAX = -(2**63), 2**63 - 1
 SYSTEM_FIELDS = ("document_id", "source")
 
 
@@ -175,7 +176,10 @@ def coerce_value(value: Any, ftype: FieldType, field: str) -> ScalarValue:
                 raise TypeError
             if isinstance(value, float) and not value.is_integer():
                 raise TypeError
-            return int(value)
+            as_int = int(value)
+            if not INT64_MIN <= as_int <= INT64_MAX:  # backends store 64-bit integers
+                raise ValueError("integer out of range")
+            return as_int
         if ftype is FieldType.FLOAT:
             if isinstance(value, bool):
                 raise TypeError

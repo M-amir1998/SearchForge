@@ -19,7 +19,7 @@ import unicodedata
 
 from searchforge.config.models import NormalizationConfig
 
-#: Bump when normalization output changes; it participates in embedding cache keys.
+#: Bump when normalization output changes (normalized text feeds content hashes, so changes re-index).
 NORMALIZATION_VERSION = "norm-v1"
 
 _CONTROL = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f\u200b\u200c\u200d\u2060\ufeff]")

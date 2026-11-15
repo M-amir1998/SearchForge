@@ -51,8 +51,9 @@ def compare_runs(
     epsilon: float = 1e-9,
     relevant_by_query: dict[str, list[str]] | None = None,
 ) -> ComparisonResult:
-    base = {o.query.query_id: o for o in baseline.scored}
-    cand = {o.query.query_id: o for o in candidate.scored}
+    # Errored queries keep zero metrics, so a candidate that fails a query counts as a regression.
+    base = {o.query.query_id: o for o in baseline.outcomes}
+    cand = {o.query.query_id: o for o in candidate.outcomes}
     common = sorted(base.keys() & cand.keys())
     missing = sorted(base.keys() ^ cand.keys())
     deltas: list[QueryDelta] = []
@@ -79,7 +80,8 @@ def compare_runs(
         )
     n = len(deltas) or 1
     b_agg, c_agg = baseline.aggregate([base[q] for q in common]), candidate.aggregate([cand[q] for q in common])
-    b_lat, c_lat = baseline.latency(), candidate.latency()
+    b_lat = baseline.latency([base[q] for q in common])
+    c_lat = candidate.latency([cand[q] for q in common])
     mean_deltas = {m: c_agg[m] - b_agg[m] for m in b_agg if m in c_agg}
     summary = {
         "queries": len(deltas),
@@ -176,7 +178,7 @@ def evaluate_gates(comparison: ComparisonResult, candidate: RunResult, gates: Ga
                 obs <= gates.max_query_regression_rate,
                 obs,
                 gates.max_query_regression_rate,
-                "share of queries whose nDCG@10 dropped",
+                f"share of queries whose {comparison.primary_metric} dropped",
             )
         )
     if gates.block_on_critical_regression:
