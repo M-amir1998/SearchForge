@@ -56,6 +56,8 @@ from searchforge.ports import EmbeddingProvider, VectorIndex
 from searchforge.storage.budget import check_disk_budget, check_profile_allows_local, enforce_chunk_limit
 
 DENSE_DIR = "dense"
+#: Bump when the on-disk format or fitted-state identity changes, so stale versions are never reused.
+INDEX_FORMAT_VERSION = "idx-v2"
 
 
 def embedding_text(chunk: Chunk) -> str:
@@ -93,6 +95,7 @@ class IndexBuilder:
     def _config_fingerprint_parts(self) -> dict[str, object]:
         idx = self.cfg.index
         return {
+            "format": INDEX_FORMAT_VERSION,
             "chunker": self.chunker.fingerprint(),
             "lexical": idx.lexical.model_dump(mode="json") if idx.lexical.enabled else None,
             "dense": idx.dense.model_dump(mode="json", exclude={"cache_enabled", "batch_size"})

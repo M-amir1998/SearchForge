@@ -68,8 +68,15 @@ def _service(path: Path, index_ref: str | None = None) -> tuple[Any, Any, Any]:
     from searchforge.indexes.handle import open_index
     from searchforge.service.search_service import SearchService
 
-    loaded = _load(path)
-    handle = open_index(loaded.workspace, index_ref or loaded.config.index.name, loaded.config)
+    try:
+        loaded = _load(path)
+        handle = open_index(loaded.workspace, index_ref or loaded.config.index.name, loaded.config)
+    except SearchForgeError as exc:
+        hint = " (run `searchforge index build` first)" if "IndexNotFound" in type(exc).__name__ else ""
+        if type(exc).__name__ == "IndexVersionMismatch":
+            hint = " (index built by an incompatible version; run `searchforge index build --force`)"
+        console.print(f"[bold red]error:[/] {type(exc).__name__}: {exc}{hint}")
+        raise typer.Exit(2) from exc
     return loaded, handle, SearchService(handle, loaded.config)
 
 
