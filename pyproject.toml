@@ -113,6 +113,7 @@ ignore = [
 "src/searchforge/indexes/chunk_store.py" = ["S608"]
 "src/searchforge/indexes/lexical/sqlite_fts.py" = ["S608"]
 "src/searchforge/embeddings/cache.py" = ["S608"]
+"src/searchforge/cli/main.py" = ["B008"]  # Typer declares options via defaults
 
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
